@@ -1,4 +1,4 @@
-name: 'TerrakubeAction'
+name: 'TapAction'
 description: 'Github integration with Terrakube Platform'
 branding:
   icon: 'package'
