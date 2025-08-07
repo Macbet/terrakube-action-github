@@ -1,58 +1,78 @@
 import * as core from '@actions/core'
 
 export interface GitHubActionInput {
-  token: string,
-  terrakubeEndpoint: string,
-  terrakubeRepository: string,
-  terrakubeTemplate: string,
-  terrakubeOrganization: string,
-  terrakubeFolder: string,
-  terrakubeSshKeyName: string,
-  githubToken: string,
-  showOutput: boolean,
-  branch: string,
+  token: string
+  terrakubeEndpoint: string
+  terrakubeRepository: string
+  terrakubeTemplate: string
+  terrakubeOrganization: string
+  terrakubeFolder: string
+  terrakubeSshKeyName: string
+  githubToken: string
+  showOutput: boolean
+  branch: string
   ignoreSslError: boolean
 }
 
-export async function getActionInput(): Promise<any> {
-  const terrakubeToken: string = core.getInput('terrakube_token', { required: true })
+export async function getActionInput(): Promise<GitHubActionInput> {
+  const terrakubeToken: string = core.getInput('terrakube_token', {
+    required: true
+  })
   core.debug(`Terrakube Token: ${terrakubeToken.substring(0, 10)}****`)
 
-  const terrakubeEndpoint: string = core.getInput('terrakube_endpoint', { required: true })
+  const terrakubeEndpoint: string = core.getInput('terrakube_endpoint', {
+    required: true
+  })
   core.debug(`Terrakube Endpoint: ${terrakubeEndpoint}`)
 
-  const terrakubeSshKeyName = core.getInput('terrakube_ssh_key_name', { required: false })
-  const server_url = core.getInput('server_url', { required: true })
-  const git_repository = core.getInput('git_repository', { required: true })
+  const terrakubeSshKeyName = core.getInput('terrakube_ssh_key_name', {
+    required: false
+  })
+  const server_url = core.getInput('server_url', {required: true})
+  const git_repository = core.getInput('git_repository', {required: true})
 
-  let terrakubeRepository = "";
-  if (terrakubeSshKeyName.length > 0) {
-    terrakubeRepository = `git@${new URL(server_url).hostname}:${git_repository}.git`
-  } else {
-    terrakubeRepository = `${server_url}/${git_repository}.git`
-  }
+  // --- Conditionally construct the repository URL ---
+  // Use SSH format if an SSH key name is provided, otherwise use HTTPS.
+  const terrakubeRepository = terrakubeSshKeyName
+    ? `git@${new URL(server_url).hostname}:${git_repository}.git`
+    : `${server_url}/${git_repository}.git`
 
   core.debug(`Terrakube Repository: ${terrakubeRepository}`)
 
-  const terrakubeTemplate: string = core.getInput('terrakube_template', { required: true })
+  core.debug(`Terrakube Repository: ${terrakubeRepository}`)
+
+  const terrakubeTemplate: string = core.getInput('terrakube_template', {
+    required: true
+  })
   core.debug(`Terrakube Template: ${terrakubeTemplate}`)
 
-  const terrakubeBranch: string = core.getInput('terrakube_branch', { required: true })
+  const terrakubeBranch: string = core.getInput('terrakube_branch', {
+    required: true
+  })
   core.debug(`Terrakube Branch: ${terrakubeBranch}`)
 
-  const terrakubeFolder: string = core.getInput('terrakube_folder', { required: true })
+  const terrakubeFolder: string = core.getInput('terrakube_folder', {
+    required: true
+  })
   core.debug(`Terrakube Folder: ${terrakubeFolder}`)
 
-  const terrakubeOrganization: string = core.getInput('terrakube_organization', { required: true })
+  const terrakubeOrganization: string = core.getInput(
+    'terrakube_organization',
+    {required: true}
+  )
   core.debug(`Terrakube Organization: ${terrakubeOrganization}`)
 
-  const showOutput: boolean = core.getBooleanInput('show_output', { required: true })
+  const showOutput: boolean = core.getBooleanInput('show_output', {
+    required: true
+  })
   core.debug(`Show Output Job: ${terrakubeOrganization}`)
 
-  const githubToken: string = core.getInput('github_token', { required: true })
+  const githubToken: string = core.getInput('github_token', {required: true})
 
-  const ignoreSslError = core.getBooleanInput('ignore_ssl_error', { required: true });
-  core.debug(`Ignore SSL Error: ${ignoreSslError}`);
+  const ignoreSslError = core.getBooleanInput('ignore_ssl_error', {
+    required: true
+  })
+  core.debug(`Ignore SSL Error: ${ignoreSslError}`)
 
   const terrakubeActionInput: GitHubActionInput = {
     token: terrakubeToken,
